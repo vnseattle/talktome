@@ -1,24 +1,77 @@
-// Imports libraries 
+/*******************************************************
+ * Author: Henry Ng
+ * Setup the server
+ * Using express, socket.io
+ ******************************************************/
+const Clients = require('./clients.js')
 var express = require("express");
 var app = express();
-
-// Create Server 
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 server.listen(1000);
 
-//app.set("view engine","ejs");
-//app.set("views","./views");
+/*******************************************************
+ * Clients management
+ ******************************************************/
+let clients = new Clients;
+
+/*******************************************************
+ * Start listening
+ ******************************************************/
+io.on("connection", onConnect);
 
 
+/*******************************************************
+ * A client connects to the server 
+ * @param {socket} socket 
+ ******************************************************/
+function onConnect(socket){
 
-
-var Users = [];
-
-io.on("connection", (socket) => {
     console.log("Someone is connected"+socket.id);
-    Users.push(socket.id);
-    socket.emit("yourID",[...Users]);
+     // Catch disconnect event 
+     socket.on("disconnect", onDisconnect);
+
+     // Add client to client list 
+     clients.add(socket.id);
+
+     // Notify to all clients
+     io.sockets.emit("yourID",clients.getSize());
+
+}
+
+/*******************************************************
+ * A client disconnects to the server 
+ * @param {socket} socket 
+ ******************************************************/
+function onDisconnect(socket){
+    console.log("Someone disconnect")
+
+     // Remove the client to client list 
+     clients.remove(socket.id);
+
+     // Notify to all clients
+     io.sockets.emit("yourID",clients.getSize());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ *  Users.push(socket.id);
+    io.sockets.emit("yourID",Users);
 
     socket.on("client-send-username", (data) => {
         if(Users.indexOf(data)>=0){
@@ -30,7 +83,7 @@ io.on("connection", (socket) => {
             io.sockets.emit("send-all-users", Users);
         }
     });
-})
+ */
 
 
 
