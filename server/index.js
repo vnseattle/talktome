@@ -32,10 +32,31 @@ function onConnect(socket){
      socket.on("disconnect", onDisconnect);
 
      // Add client to client list 
-     clients.add(socket.id);
+     var client = {
+         id: socket.id,
+         partner: null     
+        }
+
+     clients.add(client);
 
      // Notify to all clients
-     io.sockets.emit("yourID",clients.getSize());
+     io.sockets.emit("size",clients.getSize());
+     socket.emit("id",socket.id);
+
+
+     socket.on("find", ()=>{
+         clients.findPartner(socket.id);
+         console.log("find : "+socket.id);
+         console.log(clients.getAll());
+
+     });
+
+     socket.on("stop", ()=>{
+        clients.stopFinding(socket.id);
+        console.log("stop : "+socket.id);
+        console.log(clients.getAll());
+    });
+
 
 }
 
@@ -50,7 +71,7 @@ function onDisconnect(socket){
      clients.remove(socket.id);
 
      // Notify to all clients
-     io.sockets.emit("yourID",clients.getSize());
+     io.sockets.emit("size",clients.getSize());
 }
 
 

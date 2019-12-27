@@ -8,23 +8,40 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      response: false,
-      endpoint: "http://localhost:1000/"
+      size: 0,
+      socket: '',
     };
   }
 
   componentDidMount() {
-    const { endpoint } = this.state;
-    const socket = socketIOClient(endpoint);
-    socket.on("yourID", data => this.setState({ response: data }));
+    const socket = socketIOClient('localhost:1000');
+    this.setState({ socket });
+    socket.on("size", data => this.setState({ size: data }));
+    socket.on("id", data => this.setState({ id: data }));
+  }
+
+  find = () => {
+    const {socket } = this.state;
+    socket.emit("find",socket.id);
+  }
+
+  stop = () => {
+    const {socket } = this.state;
+    socket.emit("stop",socket.id);
   }
 
   render(){
-    var {response} = this.state;
+    var {size,socket} = this.state;
 
     return (
       <div className="App">
-        {response}
+        {size}
+        <br/>
+        {socket.id}
+        <br/>
+        <button onClick={this.find}>find</button>
+        <br/>
+        <button onClick={this.stop}>stop</button>
       </div>
     );
 
