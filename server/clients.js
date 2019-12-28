@@ -30,7 +30,9 @@ class Clients {
     }
     
     setPartner(id,partner){
-        this.get(id).partner = partner;
+        if(id){
+            this.get(id).partner = partner;
+        }
     }
 
     stopFinding(id){
@@ -43,6 +45,7 @@ class Clients {
     findPartner(id){
         if(this.clientWaitList.length === 0){
             this.clientWaitList.push(id);
+            return 0; // not yet 
         }else{
             // remove 
             let partner = this.clientWaitList.pop();
@@ -50,8 +53,19 @@ class Clients {
             this.setPartner(id,partner);
             this.setPartner(partner,id);
             // match 
-            console.log(partner," : ",id);
+            //console.log(partner," : ",id);
+            return 1;
         }
+    }
+
+    getPartner(id){
+        var myClient = this.clientList.find(client => client.id === id);
+          if(myClient){
+              //console.log(myClient);
+              return myClient.partner;
+          }
+
+    
     }
 
     getAll(){

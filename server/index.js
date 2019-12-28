@@ -45,9 +45,13 @@ function onConnect(socket){
 
 
      socket.on("find", ()=>{
-         clients.findPartner(socket.id);
-         console.log("find : "+socket.id);
-         console.log(clients.getAll());
+         var result = clients.findPartner(socket.id);
+         if(result == 1){
+            io.to(clients.getPartner(socket.id)).emit('msg', 'Tim duoc roi' );
+            io.to(socket.id).emit('msg', 'Tim duoc roi' );
+         }
+         //console.log("find : "+socket.id);
+         //console.log(clients.getAll());
 
      });
 
@@ -56,6 +60,12 @@ function onConnect(socket){
         console.log("stop : "+socket.id);
         console.log(clients.getAll());
     });
+
+    socket.on("send", (msg)=>{
+        console.log(socket.id+": ",msg," to "+clients.getPartner(socket.id));
+        io.to(clients.getPartner(socket.id)).emit('msg', msg );
+        io.to(socket.id).emit('msg', msg );
+    })
 
 
 }
